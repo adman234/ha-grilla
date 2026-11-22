@@ -16,8 +16,9 @@ they can't leak into upstream PRs.
 | `feat/heartbeat` | Send the app's 15 s heartbeat so the grill keeps streaming without the app open. | Yes |
 | `feat/remote-control` | Power off button and target temperature control. | Yes, after discussion |
 | `fix/misc` | Other bugs found during review. | Yes |
+| `fix/device-registry-lookup` | Stop using the device-registry identifier lookup HA drops in 2027.8. | Yes |
 
-Status: all four branches are done, tested, and merged into `main`. None has
+Status: all five branches are done, tested, and merged into `main`. None has
 been pushed or offered upstream yet. The heartbeat and remote-control commands
 haven't been tried on a real grill. See
 [docs/fork/protocol-notes.md](docs/fork/protocol-notes.md) for the research
