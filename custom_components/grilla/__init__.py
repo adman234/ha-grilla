@@ -25,8 +25,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: GrillaConfigEntry) -> bo
     # No client_suffix: since aiogrilla 0.2.4 the MQTT client id is fixed by the vendor's
     # IoT policy (the Cognito identity UUID) and the suffix parameter is ignored.
     # Share HA's aiohttp session (the client only closes a session it created itself).
+    # heartbeat=True: tell the grill a client is watching, as the vendor app does.
     client = GrillaClient(
-        refresh_token=entry.data[CONF_REFRESH_TOKEN], session=async_get_clientsession(hass)
+        refresh_token=entry.data[CONF_REFRESH_TOKEN],
+        session=async_get_clientsession(hass),
+        heartbeat=True,
     )
 
     @callback
