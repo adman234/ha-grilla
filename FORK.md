@@ -73,4 +73,15 @@ calling the PowerDown API). Before coding those, choose one:
 - add the code inside this integration first, and move it into aiogrilla
   in the upstream PR.
 
+**Chosen: fork aiogrilla.** The clone has `feat/heartbeat` and
+`feat/remote-control` branches (from aiogrilla `upstream/main`) and a fork
+`main` that merges both and sets the version to `0.2.5.dev1`. Fork `main` here
+pins that build in `manifest.json` as
+`git+https://github.com/adman234/aiogrilla@<sha>#aiogrilla==0.2.5.dev1`. Keep
+the `#aiogrilla==<version>` fragment: without it Home Assistant either keeps an
+installed 0.2.4 or reinstalls from GitHub on every start. When you change the
+aiogrilla fork, bump its dev version and update the sha and version here.
+The ha-grilla feature branches keep `aiogrilla>=0.2.4`; their upstream PRs wait
+for an aiogrilla release with these calls.
+
 The probe 2 fix and misc bug fixes need only this repository.
