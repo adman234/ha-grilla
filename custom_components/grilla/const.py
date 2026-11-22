@@ -3,7 +3,13 @@
 from homeassistant.const import Platform
 
 DOMAIN = "grilla"
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.EVENT]
+PLATFORMS = [
+    Platform.SENSOR,
+    Platform.BINARY_SENSOR,
+    Platform.EVENT,
+    Platform.BUTTON,
+    Platform.NUMBER,
+]
 
 CONF_REFRESH_TOKEN = "refresh_token"
 CONF_EMAIL = "email"
