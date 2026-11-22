@@ -17,7 +17,9 @@ they can't leak into upstream PRs.
 | `feat/remote-control` | Power off button and target temperature control. | Yes, after discussion |
 | `fix/misc` | Other bugs found during review. | Yes |
 
-Status: the branches have been created but don't contain any work yet. See
+Status: all four branches are done, tested, and merged into `main`. None has
+been pushed or offered upstream yet. The heartbeat and remote-control commands
+haven't been tried on a real grill. See
 [docs/fork/protocol-notes.md](docs/fork/protocol-notes.md) for the research
 behind them.
 
