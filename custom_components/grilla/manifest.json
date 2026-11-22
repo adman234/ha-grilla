@@ -18,7 +18,7 @@
     "botocore"
   ],
   "requirements": [
-    "aiogrilla>=0.2.4"
+    "git+https://github.com/adman234/aiogrilla@09cc99836d682b1679f9f87f38262a2c3fe03d2f#aiogrilla==0.2.5.dev1"
   ],
   "version": "0.2.6"
 }
