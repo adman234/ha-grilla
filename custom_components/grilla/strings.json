@@ -88,6 +88,21 @@
     },
     "event": {
       "alarm": { "name": "Alarm" }
+    },
+    "button": {
+      "power_off": { "name": "Power off" }
+    },
+    "number": {
+      "grill_setpoint": { "name": "Grill setpoint" },
+      "probe_setpoint": { "name": "Probe 1 setpoint" },
+      "probe2_setpoint": { "name": "Probe 2 setpoint" }
+    }
+  },
+  "exceptions": {
+    "command_failed": { "message": "Couldn't send the command to the grill: {error}" },
+    "setpoint_out_of_range": { "message": "That setpoint isn't allowed: {error}" },
+    "auth_failed": {
+      "message": "Grilla rejected the account sign-in. Re-authenticate the integration and try again."
     }
   }
 }

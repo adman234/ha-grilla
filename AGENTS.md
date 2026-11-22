@@ -2,10 +2,11 @@
 
 ## Project purpose
 
-Unofficial read-only Home Assistant custom integration (domain `grilla`) for
+Unofficial Home Assistant custom integration (domain `grilla`) for
 Grilla Grills Alpha Connect smokers. Exposes live telemetry — temperatures, cook
 status, cook mode, cook timer, problem/probe-present/connectivity binary sensors,
-and an alarm event entity — via the `aiogrilla` library.
+and an alarm event entity — plus setpoint numbers and a power-off button, via the
+`aiogrilla` library.
 
 ## Layout
 
@@ -19,6 +20,8 @@ custom_components/grilla/
     sensor.py          — temperature, status, cook_mode, cook_timer sensors
     binary_sensor.py   — connectivity, problem, probe_present, probe2_present
     event.py           — GrillaAlarmEvent (rising-edge alarm/temp-range transitions)
+    number.py          — grill / probe 1 / probe 2 setpoints (sent in °F)
+    button.py          — power-off (no power-on exists)
     config_flow.py     — GrillaConfigFlow (user + reauth) and GrillaOptionsFlow
     diagnostics.py     — async_get_config_entry_diagnostics (credentials redacted)
     strings.json       — translation strings (English)
@@ -98,10 +101,12 @@ All four must pass cleanly before committing or opening a PR:
 .venv/bin/pyright            # type-check
 ```
 
-## Read-only scope
+## Control scope
 
-v1 of this integration is monitoring only. Do not add write operations (service
-calls, setpoints, start/stop) — they are intentionally out of scope.
+The only commands are the setpoints (number.py) and power-off (button.py), all
+through `aiogrilla`. Don't add a power-on or start-cook control: the grills can't be
+started remotely. Command failures raise `HomeAssistantError` with a translated
+message.
 
 ## Secrets and credentials
 

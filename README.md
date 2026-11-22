@@ -5,7 +5,7 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
 [![CI](https://img.shields.io/github/actions/workflow/status/zwrose/ha-grilla/ci.yml?branch=main&style=for-the-badge)](https://github.com/zwrose/ha-grilla/actions/workflows/ci.yml)
 
-Unofficial Home Assistant integration for Grilla Grills Alpha Connect smokers — live read-only telemetry via the Grilla cloud.
+Unofficial Home Assistant integration for Grilla Grills Alpha Connect smokers — live telemetry, setpoints and remote power-off via the Grilla cloud.
 
 ## Disclaimer
 
@@ -20,8 +20,7 @@ your own risk, with no warranty of any kind.**
 ## What it does
 
 ha-grilla signs in with your Grilla account and surfaces live grill telemetry in Home
-Assistant. It is **read-only** — it does not send any
-commands to the grill.
+Assistant, and can change the grill and food-probe setpoints or turn the grill off.
 
 The integration is **cloud-push**: when the grill is on, updates arrive approximately
 every few seconds. When the grill is off or the cloud connection drops, entities
@@ -108,12 +107,16 @@ After setup, each grill's displayed model name can be customised:
 You can override the model name shown in the device registry for each grill (useful
 when aiogrilla cannot resolve the model code reported by the hardware).
 
-## Read-only scope
+## Remote control
 
-Version 1 of this integration is **monitoring only**. It exposes all available
-telemetry but does not support sending commands (start/stop cook, temperature
-setpoints, etc.). Write operations are a possible future addition but are
-intentionally out of scope for the initial release.
+- **Grill setpoint** (180–500 °F in 5 °F steps), **Probe 1 setpoint** and **Probe 2
+  setpoint** (100–225 °F) number entities. Probe 2 appears only on two-probe models.
+  The new value shows once the grill's next update confirms it.
+- **Power off** button: the grill runs its normal shutdown. There is no power-on:
+  the grills can't be started remotely, so start the cook at the grill.
+
+Commands go out only while the grill is connected; the entities are unavailable
+otherwise. Setpoints are always sent in °F (Home Assistant converts for metric users).
 
 ## Privacy and security
 
