@@ -92,8 +92,8 @@ async def test_grill_temp_value_and_unit(hass: HomeAssistant, make_state) -> Non
     assert state.attributes.get("unit_of_measurement") == "°F"
 
 
-async def test_celsius_pins_native_unit(hass: HomeAssistant, make_state) -> None:
-    """When grill reports Celsius, native unit is pinned to °C."""
+async def test_celsius_display_pref_still_reads_fahrenheit(hass: HomeAssistant, make_state) -> None:
+    """units_pref "C" is a display preference: the raw value is °F and HA converts it."""
     hass.config.units = METRIC_SYSTEM
     await _setup(hass, make_state=make_state, push=True, units=TemperatureUnit.CELSIUS)
 
@@ -102,6 +102,8 @@ async def test_celsius_pins_native_unit(hass: HomeAssistant, make_state) -> None
     state = hass.states.get(entity_id)
     assert state is not None
     assert state.attributes.get("unit_of_measurement") == "°C"
+    # make_state's grill_temp is 247 (°F) -> 119.4 °C, not 247 °C.
+    assert round(float(state.state)) == 119
 
 
 async def test_status_enum(hass: HomeAssistant, make_state) -> None:
@@ -243,25 +245,22 @@ async def test_timer_caching_no_drift_on_repeat(hass: HomeAssistant, make_state)
     assert state.state != first
 
 
-async def test_unit_change_mid_session_keeps_pinned(hass: HomeAssistant, make_state) -> None:
-    """A mid-session unit change is ignored: the first-seen native unit stays pinned."""
-    hass.config.units = METRIC_SYSTEM
+async def test_units_pref_change_mid_session_keeps_fahrenheit(
+    hass: HomeAssistant, make_state
+) -> None:
+    """Toggling the grill's display units never relabels the °F readings."""
+    hass.config.units = US_CUSTOMARY_SYSTEM
     _entry, cbs = await _setup(hass, make_state=make_state, push=False)
     entity_id = _entity_id(hass, "sub_sx1_grill_temp")
     assert entity_id is not None
 
-    cbs["state"](make_state(units=TemperatureUnit.CELSIUS))
-    await hass.async_block_till_done()
-    state = hass.states.get(entity_id)
-    assert state is not None
-    assert state.attributes.get("unit_of_measurement") == "°C"
-
-    # Grill suddenly reports Fahrenheit: keep the pinned °C and warn (don't flip the unit).
-    cbs["state"](make_state(units=TemperatureUnit.FAHRENHEIT))
-    await hass.async_block_till_done()
-    state = hass.states.get(entity_id)
-    assert state is not None
-    assert state.attributes.get("unit_of_measurement") == "°C"
+    for units in (TemperatureUnit.CELSIUS, TemperatureUnit.FAHRENHEIT):
+        cbs["state"](make_state(units=units, grill_temp=225.0))
+        await hass.async_block_till_done()
+        state = hass.states.get(entity_id)
+        assert state is not None
+        assert state.attributes.get("unit_of_measurement") == "°F"
+        assert float(state.state) == 225.0
 
 
 async def test_probe2_none_when_unplugged(hass: HomeAssistant, make_state) -> None:

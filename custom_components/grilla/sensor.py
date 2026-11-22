@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from aiogrilla import CookMode, GrillState, Mode, TemperatureUnit
+from aiogrilla import CookMode, GrillState, Mode
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -15,7 +14,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import EntityCategory, Platform, UnitOfTemperature
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
@@ -24,7 +23,6 @@ from .entity import GrillaEntity, async_remove_entity
 from .helpers import has_second_probe
 from .models import GrillaConfigEntry
 
-_LOGGER = logging.getLogger(__name__)
 PARALLEL_UPDATES = 0
 TIMER_KEY = "cook_timer"
 
@@ -129,35 +127,14 @@ class GrillaSensor(GrillaEntity, SensorEntity):  # type: ignore[misc]
     def __init__(
         self, coordinator: GrillaCoordinator, description: GrillaSensorEntityDescription
     ) -> None:
-        """Initialize the sensor and seed the temperature unit default."""
+        """Initialize the sensor; temperatures are always native Fahrenheit."""
         super().__init__(coordinator, description.key)
         self.entity_description = description  # pyright: ignore[reportIncompatibleVariableOverride]
-        self._pinned = False
         if description.device_class is SensorDeviceClass.TEMPERATURE:
+            # The controller always reports temperatures in °F. Its units_pref setting is
+            # only the app's display preference: the app converts °F -> °C itself when it is
+            # "C". So the native unit never follows units_pref; HA converts for display.
             self._attr_native_unit_of_measurement = UnitOfTemperature.FAHRENHEIT
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Pin the native temperature unit to the grill's reported unit (eagerly, once)."""
-        d = self.coordinator.data
-        if d is not None and self.entity_description.device_class is SensorDeviceClass.TEMPERATURE:
-            unit = (
-                UnitOfTemperature.CELSIUS
-                if d.units is TemperatureUnit.CELSIUS
-                else UnitOfTemperature.FAHRENHEIT
-            )
-            if not self._pinned:
-                self._attr_native_unit_of_measurement = unit
-                self._pinned = True
-            elif unit != self._attr_native_unit_of_measurement:
-                _LOGGER.warning(
-                    "%s units changed %s->%s mid-session; keeping pinned %s",
-                    self.entity_id,
-                    self._attr_native_unit_of_measurement,
-                    unit,
-                    self._attr_native_unit_of_measurement,
-                )
-        super()._handle_coordinator_update()
 
     @property
     def native_value(  # pyright: ignore[reportIncompatibleVariableOverride]
