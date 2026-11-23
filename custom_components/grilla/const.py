@@ -14,6 +14,8 @@ PLATFORMS = [
 CONF_REFRESH_TOKEN = "refresh_token"
 CONF_EMAIL = "email"
 CONF_MODELS = "models"  # options: {grill_id: friendly_model_name}
+# options: send the app's client heartbeat (original controllers stop reporting without it)
+CONF_HEARTBEAT = "heartbeat"
 
 # Controller codes (casefolded) of models with a single meat-probe port. The Grilla app
 # shows probe 2 only for models with a "three-readings" dashboard card: silverbacxl,

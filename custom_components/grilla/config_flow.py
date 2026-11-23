@@ -11,7 +11,14 @@ from homeassistant.core import callback
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import CONF_EMAIL, CONF_MODELS, CONF_REFRESH_TOKEN, DOMAIN, GRILLA_MODELS
+from .const import (
+    CONF_EMAIL,
+    CONF_HEARTBEAT,
+    CONF_MODELS,
+    CONF_REFRESH_TOKEN,
+    DOMAIN,
+    GRILLA_MODELS,
+)
 from .helpers import model_name_for, resolve_model_name
 
 if TYPE_CHECKING:
@@ -160,18 +167,22 @@ class GrillaConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class GrillaOptionsFlow(OptionsFlowWithReload):
-    """Let the user override each grill's displayed model name (reloads on save)."""
+    """Override each grill's model name and opt into the heartbeat (reloads on save)."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
-        """Show/store the per-grill model overrides (same picker as onboarding)."""
+        """Show/store the per-grill model overrides and the heartbeat opt-in."""
         grills = self.config_entry.runtime_data.grills
         options = self.config_entry.options
         schema, label_to_id = _model_picker(grills, lambda g: model_name_for(g, options))
+        schema = schema.extend(
+            {vol.Optional(CONF_HEARTBEAT, default=options.get(CONF_HEARTBEAT, False)): bool}
+        )
         if user_input is not None:
             models = {
                 label_to_id[label]: name
                 for label, name in user_input.items()
                 if name and label in label_to_id
             }
-            return self.async_create_entry(data={CONF_MODELS: models})
+            heartbeat = bool(user_input.get(CONF_HEARTBEAT, False))
+            return self.async_create_entry(data={CONF_MODELS: models, CONF_HEARTBEAT: heartbeat})
         return self.async_show_form(step_id="init", data_schema=schema)

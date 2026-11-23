@@ -107,6 +107,11 @@ After setup, each grill's displayed model name can be customised:
 You can override the model name shown in the device registry for each grill (useful
 when aiogrilla cannot resolve the model code reported by the hardware).
 
+**Send client heartbeat** (off by default) makes the integration send the same
+heartbeat the Grilla app sends while it's open. Turn it on for grills with an original
+controller, such as the first Silverbac, which stop reporting when no app is open.
+Leave it off for other grills.
+
 ## Remote control
 
 - **Grill setpoint** (180–500 °F in 5 °F steps), **Probe 1 setpoint** and **Probe 2
